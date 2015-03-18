@@ -31,26 +31,21 @@ import Network.Socket.ByteString
 
 import Hat.Message
 
-data ProtocolMessage = ProtocolMessage { contents :: String,
-                                         user :: String }
-                       deriving (Generic, Show)
-
-data Protocol = MessageRequest { message :: ProtocolMessage }
-              | HistoryRequest { length :: Int }
-              | MessagesResponse { messages :: [ProtocolMessage] }
+data Protocol = MessageRequest { message :: Message }
+              | HistoryRequest { historyLength :: Int }
+              | MessagesResponse { messages :: [Message] }
                 deriving (Generic, Show)
 
-instance Serialize ProtocolMessage where
 instance Serialize Protocol where
 
 -- | Recieve a `Protocol` from the given `Socket`.
 recvProtocol :: Socket -> IO (Either String Protocol)
 recvProtocol sock = runEitherT $ do
   msgLenBytes <- liftIO $ recv sock 8 
-  when (B.length msgLenBytes /= 8) $ fail "bad!!!"
+  when (B.length msgLenBytes /= 8) $ left "err 1"
   msgLen <- hoistEither $ decode msgLenBytes :: EitherT String IO Int
   msgBytes <- liftIO $ recv sock msgLen
-  when (B.length msgBytes /= msgLen) $ fail "bad!!!"
+  when (B.length msgBytes /= msgLen) $ left "err 2"
   msg <- hoistEither $ decode msgBytes :: EitherT String IO Protocol
   return msg
 
@@ -60,7 +55,7 @@ sendProtocol sock msg = runEitherT $ do
   let msgBytes = encode msg
       msgBytesLen = B.length msgBytes
   bytesSent <- liftIO $ send sock $ encode msgBytesLen
-  when (bytesSent /= 8) $ fail "bad!!!"
+  when (bytesSent /= 8) $ left "err 3"
   bytesSent' <- liftIO $ send sock msgBytes
-  when (bytesSent' /= msgBytesLen) $ fail "bad!!!"
+  when (bytesSent' /= msgBytesLen) $ left "err 4"
   return ()

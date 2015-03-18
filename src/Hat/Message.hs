@@ -15,17 +15,21 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
-{-# LANGUAGE DeriveDataTypeable, TypeFamilies, TemplateHaskell #-}
+{-# LANGUAGE DeriveGeneric, DeriveDataTypeable, TypeFamilies, TemplateHaskell #-}
 
 module Hat.Message where
 
+import GHC.Generics
+import Data.Serialize (Serialize)
 import Data.Typeable
 import Data.SafeCopy
-import Data.Time.Clock (UTCTime)
+--import Data.Time.Clock (UTCTime)
 
 data Message = Message { content :: String
-                       , user :: String
-                       , time :: UTCTime }
-                         deriving (Typeable, Eq, Show)
+                       , user :: String }
+                       --, time :: UTCTime }
+                         deriving (Generic, Typeable, Eq, Show)
+
+instance Serialize Message where
 
 $(deriveSafeCopy 0 'base ''Message)

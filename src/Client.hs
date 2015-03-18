@@ -16,19 +16,13 @@
 -}
 
 import Network.Socket
-
-import Data.List
-import Data.Word
-import Data.Bits
-import Hat.Acid
-import Hat.Protocol
+import UI.NCurses
+import Hat.Client
 
 main = do
   sock <- socket AF_INET Stream 0
   hostAddress <- inet_addr "127.0.0.1"
   connect sock (SockAddrInet 4567 hostAddress)
-  let msgs = [ProtocolMessage "foo bar" "bazman",
-              ProtocolMessage "you suck" "yoker"]
-  sendProtocol sock (MessagesResponse msgs)
+  runCurses $ runClient sock
   sClose sock
-  return ()
+
