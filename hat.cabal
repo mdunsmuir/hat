@@ -31,6 +31,6 @@ executable hat-client
   -- other-extensions:    
   build-depends:       base >=4.7 && <4.8,
                        time, safecopy, containers, mtl,
-                       cereal, network, bytestring, either, ncurses, transformers
+                       cereal, network, bytestring, either, hscurses, transformers
   hs-source-dirs:      src
   default-language:    Haskell2010

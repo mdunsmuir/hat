@@ -34,6 +34,10 @@ data ClientState = ClientState { clientMessages :: S.Seq Message
                                , textBuffer :: S.Seq Char
                                , clientWindow :: Window }
 
+runClient :: Socket -> IO ()
+runClient sock = do
+
+
 runClient :: Socket -> Curses ()
 runClient sock = do
   setRaw True
